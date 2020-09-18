@@ -1,58 +1,53 @@
 import React, { useState } from "react";
 import { useHistory } from 'react-router-dom';
-import axiosWithAuth from '../utils/axiosWithAuth'
+import { axiosWithAuth } from './axiosWithAuth';
 
-const Login = () => {
-  const [credentials, setCredentials] = useState({ username: '', password: '' });
-  const history = useHistory();
-
-  const handleChanges = e => {
-    setCredentials({
-      ...credentials,
-      [e.target.name]: e.target.value
-    })
-  }
-
+const Login = (props) => {
+  const [credentials, setCredentials] = useState({
+    username: "",
+    password: "",
+  });
   // make a post request to retrieve a token from the api
   // when you have handled the token, navigate to the BubblePage route
 
-  const login = e => {
+  const inputHandler = (e) => {
+    setCredentials({ ...credentials, [e.target.name]: e.target.value });
+  };
+  const login = (e) => {
     e.preventDefault();
     axiosWithAuth()
-      .post('/login', credentials)
-      .then(res => {
-        localStorage.setItem('token', res.data.payload);
-        history.push('/protected');
+      .post("./api/login", credentials)
+      .then((res) => {
+        localStorage.setItem("token", res.data.payload);
+        props.history.push("/BubblePage");
+        console.log(res);
       })
-      .catch(err => console.log('oops', err));
-  }
+      .catch((err) =>
+        console.log("error happend wih the post request to API", err)
+      );
+  };
   return (
-    <>
-
-      <h1>Welcome to the Bubble App!</h1>
-      
+    <div className="login">
       <form onSubmit={login}>
-        <label>Username:
+        <p>Username:</p>
         <input
-         text='name'
-         name='username'
-         placeholder='Username'
-         value={credentials.username}
-         onChange={handleChanges}
-        /></label>
-
-        <label>Password:
+          type="text"
+          placeholder="Username"
+          name="username"
+          value={credentials.username}
+          onChange={inputHandler}
+        />
+        <p>Password:</p>
         <input
-         type='password'
-         name='password'
-         value={credentials.password}
-         onChange={handleChanges}
-        /></label>
-        <div className="buttonRow">
-        <button type="submit">Login</button>
-        </div>
+          type="password"
+          placeholder="Password"
+          name="password"
+          value={credentials.password}
+          onChange={inputHandler}
+        />
+        <button className="login-button">Login</button>
       </form>
-    </>
+    </div>
   );
 };
 
